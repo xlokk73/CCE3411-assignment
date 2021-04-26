@@ -1,4 +1,3 @@
-
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -38,26 +37,37 @@ int main(int argc, char* argv[])
     nodeContainer.Create(2);
 
     PointToPointHelper pointToPointHelper;
-    pointToPointHelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+    //pointToPointHelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
     //pointToPointHelper.SetChannelAttribute("Delay", StringValue("2ms"));
 
     NetDeviceContainer netDeviceContainer;
-    netDeviceContainer = pointToPointHelper.Install(nodeContainer);
+    //netDeviceContainer = pointToPointHelper.Install(nodeContainer);
 
-    /*
-    PointToPointChannel pointToPointChannel;
+    /* Added code */
 
     PointToPointNetDevice pointToPointNetDeviceA;
     pointToPointNetDeviceA.SetDataRate(DataRate("5Mbps"));
-    pointToPointChannel.Attach(&pointToPointNetDeviceA);
 
     PointToPointNetDevice pointToPointNetDeviceB;
-    pointToPointNetDeviceB.SetDataRate(DataRate("5MBps"));
+    pointToPointNetDeviceB.SetDataRate(DataRate("5Mbps"));
+
+    PointToPointChannel pointToPointChannel;
+
+    netDeviceContainer.Add(&pointToPointNetDeviceA);
+    netDeviceContainer.Add(&pointToPointNetDeviceB);
+
+    nodeContainer.Get(0)->AddDevice(netDeviceContainer.Get(0));
+    nodeContainer.Get(1)->AddDevice(netDeviceContainer.Get(1));
+
+    //netDeviceContainer.Get(0)->SetNode(nodeContainer.Get(0));
+    //netDeviceContainer.Get(0)->SetNode(nodeContainer.Get(0));
+
+    pointToPointChannel.Attach(&pointToPointNetDeviceA);
     pointToPointChannel.Attach(&pointToPointNetDeviceB);
 
-    nodeContainer.Get(0)->AddDevice(&pointToPointNetDeviceA);
-    nodeContainer.Get(1)->AddDevice(&pointToPointNetDeviceB);
-*/
+
+    /* End of added code */
+
 
     InternetStackHelper internetStackHelper;
     internetStackHelper.Install(nodeContainer);
