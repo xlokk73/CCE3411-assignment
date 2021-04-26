@@ -1,0 +1,27 @@
+# depslib dependency file v1.0
+1619366829 source:/home/ns-3/projects/Assignment/main.cpp
+	"ns3/core-module.h"
+	"ns3/network-module.h"
+	"ns3/internet-module.h"
+	"ns3/point-to-point-module.h"
+	"ns3/applications-module.h"
+	"ns3/abort.h"
+	"ns3/log.h"
+	"ns3/simulator.h"
+	"ns3/point-to-point-net-device.h"
+	"ns3/point-to-point-channel.h"
+	"ns3/queue.h"
+	"ns3/net-device-queue-interface.h"
+	"ns3/config.h"
+	"ns3/packet.h"
+	"ns3/names.h"
+	"ns3/object-factory.h"
+	<iostream>
+
+1619256319 source:/home/ns-3/projects/Assignment/original.cc
+	"ns3/core-module.h"
+	"ns3/network-module.h"
+	"ns3/internet-module.h"
+	"ns3/point-to-point-module.h"
+	"ns3/applications-module.h"
+
