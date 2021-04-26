@@ -39,10 +39,25 @@ int main(int argc, char* argv[])
 
     PointToPointHelper pointToPointHelper;
     pointToPointHelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
-    pointToPointHelper.SetChannelAttribute("Delay", StringValue("2ms"));
+    //pointToPointHelper.SetChannelAttribute("Delay", StringValue("2ms"));
 
     NetDeviceContainer netDeviceContainer;
     netDeviceContainer = pointToPointHelper.Install(nodeContainer);
+
+    /*
+    PointToPointChannel pointToPointChannel;
+
+    PointToPointNetDevice pointToPointNetDeviceA;
+    pointToPointNetDeviceA.SetDataRate(DataRate("5Mbps"));
+    pointToPointChannel.Attach(&pointToPointNetDeviceA);
+
+    PointToPointNetDevice pointToPointNetDeviceB;
+    pointToPointNetDeviceB.SetDataRate(DataRate("5MBps"));
+    pointToPointChannel.Attach(&pointToPointNetDeviceB);
+
+    nodeContainer.Get(0)->AddDevice(&pointToPointNetDeviceA);
+    nodeContainer.Get(1)->AddDevice(&pointToPointNetDeviceB);
+*/
 
     InternetStackHelper internetStackHelper;
     internetStackHelper.Install(nodeContainer);
