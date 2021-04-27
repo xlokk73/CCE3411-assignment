@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     NodeContainer nodeContainer;
     nodeContainer.Create(2);
 
-    PointToPointHelper pointToPointHelper;
+    //PointToPointHelper pointToPointHelper;
     //pointToPointHelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
     //pointToPointHelper.SetChannelAttribute("Delay", StringValue("2ms"));
 
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     //netDeviceContainer = pointToPointHelper.Install(nodeContainer);
 
     /* Added code */
-
+    /**/
     PointToPointNetDevice pointToPointNetDeviceA;
     pointToPointNetDeviceA.SetDataRate(DataRate("5Mbps"));
 
@@ -59,13 +59,13 @@ int main(int argc, char* argv[])
     nodeContainer.Get(0)->AddDevice(netDeviceContainer.Get(0));
     nodeContainer.Get(1)->AddDevice(netDeviceContainer.Get(1));
 
-    //netDeviceContainer.Get(0)->SetNode(nodeContainer.Get(0));
-    //netDeviceContainer.Get(0)->SetNode(nodeContainer.Get(0));
+    netDeviceContainer.Get(0)->SetNode(nodeContainer.Get(0));
+    netDeviceContainer.Get(1)->SetNode(nodeContainer.Get(1));
 
     pointToPointChannel.Attach(&pointToPointNetDeviceA);
     pointToPointChannel.Attach(&pointToPointNetDeviceB);
 
-
+    /**/
     /* End of added code */
 
 
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
     clientApplicationContainer.Start(Seconds(3.0));
     clientApplicationContainer.Stop(Seconds(10.0));
 
-    pointToPointHelper.EnablePcapAll("firstPcap");
+    //pointToPointHelper.EnablePcapAll("firstPcap");
     Simulator::Run ();
     Simulator::Destroy ();
 
