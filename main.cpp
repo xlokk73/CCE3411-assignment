@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     NetDeviceContainer netDeviceContainer;
     //netDeviceContainer = pointToPointHelper.Install(nodeContainer);
 
-    /* Added code */
+    /* Added code to replace PointToPointHelper*/
     /**/
     PointToPointNetDevice pointToPointNetDeviceA;
     pointToPointNetDeviceA.SetDataRate(DataRate("5Mbps"));
@@ -67,7 +67,6 @@ int main(int argc, char* argv[])
 
     /**/
     /* End of added code */
-
 
     InternetStackHelper internetStackHelper;
     internetStackHelper.Install(nodeContainer);
