@@ -20,6 +20,7 @@
  #include "ns3/internet-module.h"
  #include "ns3/point-to-point-module.h"
  #include "ns3/applications-module.h"
+ #include "ns3/object-factory.h"
 
 
 using namespace ns3;
@@ -66,10 +67,34 @@ int main(int argc, char* argv[])
     pointToPointChannel.Attach(&pointToPointNetDeviceB);
 
     /**/
-    /* End of added code */
+    /* End of added code for PointToPointHelper*/
 
-    InternetStackHelper internetStackHelper;
-    internetStackHelper.Install(nodeContainer);
+    //InternetStackHelper internetStackHelper;
+    //internetStackHelper.Install(nodeContainer);
+
+    ObjectFactory arpL3Factory;
+    arpL3Factory.SetTypeId("ns3::ArpL3Protocol");
+    Ptr<Object> arpL3Protocol = arpL3Factory.Create <Object> ();
+    nodeContainer.Get(0)->AggregateObject (arpL3Protocol);
+
+    ObjectFactory ipv4L3Factory;
+    ipv4L3Factory.SetTypeId("ns3::Ipv4L3Protocol");
+    Ptr<Object> ipv4L3Protocol = ipv4L3Factory.Create <Object> ();
+    nodeContainer.Get(0)->AggregateObject (ipv4L3Protocol);
+
+    ObjectFactory icmpv4L4Factory;
+    icmpv4L4Factory.SetTypeId("ns3::Icmpv4L4Protocol");
+    Ptr<Object> icmpv4L4Protocol = icmpv4L4Factory.Create<Object> ();
+    nodeContainer.Get(0)->AggregateObject(icmpv4L4Protocol);
+
+    Ptr<Ipv4> ipv4 = nodeContainer.Get(0)->GetObject<Ipv4> ();
+    Ptr<Ipv4RoutingProtocol> ipv4RoutingProtocol = ipv4RoutingProtocol->Create(nodeContainer.Get(0));;
+
+    ipv4->SetRoutingProtocol (ipv4RoutingProtocol);
+
+    std::cout << "ADDED, OK!\n";
+
+    /* End of added code */
 
     Ipv4AddressHelper ipv4AddressHelper;
     ipv4AddressHelper.SetBase("192.168.0.0", "255.255.255.0");

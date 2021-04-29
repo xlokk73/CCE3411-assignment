@@ -1,10 +1,11 @@
 # depslib dependency file v1.0
-1619620342 source:/home/ns-3/projects/Assignment/main.cpp
+1619723352 source:/home/ns-3/projects/Assignment/main.cpp
 	"ns3/core-module.h"
 	"ns3/network-module.h"
 	"ns3/internet-module.h"
 	"ns3/point-to-point-module.h"
 	"ns3/applications-module.h"
+	"ns3/object-factory.h"
 
 1619256319 source:/home/ns-3/projects/Assignment/original.cc
 	"ns3/core-module.h"
