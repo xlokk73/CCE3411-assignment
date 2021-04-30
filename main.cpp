@@ -22,6 +22,11 @@
  #include "ns3/applications-module.h"
  #include "ns3/object-factory.h"
 
+void debug(std::string str) {
+    std::cout << str << std::endl;
+}
+
+
 
 using namespace ns3;
 
@@ -88,9 +93,25 @@ int main(int argc, char* argv[])
     nodeContainer.Get(0)->AggregateObject(icmpv4L4Protocol);
 
     Ptr<Ipv4> ipv4 = nodeContainer.Get(0)->GetObject<Ipv4> ();
-    Ptr<Ipv4RoutingProtocol> ipv4RoutingProtocol = ipv4RoutingProtocol->Create(nodeContainer.Get(0));;
-
+    Ptr<Ipv4RoutingProtocol> ipv4RoutingProtocol = CreateObject<Ipv4StaticRouting>();
     ipv4->SetRoutingProtocol (ipv4RoutingProtocol);
+
+    ObjectFactory trafficControlLayerFactory;
+    trafficControlLayerFactory.SetTypeId("ns3::TrafficControlLayer");
+    Ptr<Object> trafficControlLayerProtocol = trafficControlLayerFactory.Create<Object> ();
+    nodeContainer.Get(0)->AggregateObject(trafficControlLayerProtocol);
+
+    ObjectFactory udpL4Factory;
+    udpL4Factory.SetTypeId("ns3::UdpL4Protocol");
+    Ptr<Object> udpL4Protocol = udpL4Factory.Create<Object> ();
+    nodeContainer.Get(0)->AggregateObject(udpL4Protocol);
+
+    Ptr<PacketSocketFactory> packetSocketFactory = CreateObject<PacketSocketFactory> ();
+    nodeContainer.Get(0)->AggregateObject (packetSocketFactory);
+
+
+
+
 
     std::cout << "ADDED, OK!\n";
 
