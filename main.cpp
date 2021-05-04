@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     ns3::LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
     NodeContainer nodeContainer;
-    nodeContainer.Create(2);
+    //nodeContainer.Create(2);
 
     //PointToPointHelper pointToPointHelper;
     //pointToPointHelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
@@ -51,71 +51,42 @@ int main(int argc, char* argv[])
 
     /* Added code to replace PointToPointHelper*/
     /**/
-    PointToPointNetDevice pointToPointNetDeviceA;
-    pointToPointNetDeviceA.SetDataRate(DataRate("5Mbps"));
+    Ptr<PointToPointChannel> pointToPointChannel = CreateObjectWithAttributes<PointToPointChannel>("Delay", StringValue("3ms"));
 
-    PointToPointNetDevice pointToPointNetDeviceB;
-    pointToPointNetDeviceB.SetDataRate(DataRate("5Mbps"));
 
-    PointToPointChannel pointToPointChannel;
+    Ptr<Node> nodeA = CreateObject<Node>();
+    nodeContainer.Add(nodeA);
 
-    netDeviceContainer.Add(&pointToPointNetDeviceA);
-    netDeviceContainer.Add(&pointToPointNetDeviceB);
+    Ptr<PointToPointNetDevice> pointToPointNetDeviceA = CreateObjectWithAttributes<PointToPointNetDevice>("DataRate", StringValue("5Mbps"));
+    nodeA->AddDevice(pointToPointNetDeviceA);
 
-    nodeContainer.Get(0)->AddDevice(netDeviceContainer.Get(0));
-    nodeContainer.Get(1)->AddDevice(netDeviceContainer.Get(1));
+    Ptr<Queue<Packet> > queueA = CreateObject<DropTailQueue<Packet> > ();
+    pointToPointNetDeviceA->SetQueue(queueA);
 
-    netDeviceContainer.Get(0)->SetNode(nodeContainer.Get(0));
-    netDeviceContainer.Get(1)->SetNode(nodeContainer.Get(1));
+    pointToPointNetDeviceA->Attach(pointToPointChannel);
 
-    pointToPointChannel.Attach(&pointToPointNetDeviceA);
-    pointToPointChannel.Attach(&pointToPointNetDeviceB);
+    netDeviceContainer.Add(pointToPointNetDeviceA);
 
-    /**/
+
+    Ptr<Node> nodeB = CreateObject<Node>();
+    nodeContainer.Add(nodeB);
+
+    Ptr<PointToPointNetDevice> pointToPointNetDeviceB = CreateObjectWithAttributes<PointToPointNetDevice>("DataRate", StringValue("5Mbps"));
+    nodeB->AddDevice(pointToPointNetDeviceB);
+
+    Ptr<Queue<Packet> > queueB = CreateObject<DropTailQueue<Packet> > ();
+    pointToPointNetDeviceB->SetQueue(queueB);
+
+    pointToPointNetDeviceB->Attach(pointToPointChannel);
+
+    netDeviceContainer.Add(pointToPointNetDeviceB);
+
+    debug("Added, OK");
     /* End of added code for PointToPointHelper*/
 
-    //InternetStackHelper internetStackHelper;
-    //internetStackHelper.Install(nodeContainer);
+    InternetStackHelper internetStackHelper;
+    internetStackHelper.Install(nodeContainer);
 
-    ObjectFactory arpL3Factory;
-    arpL3Factory.SetTypeId("ns3::ArpL3Protocol");
-    Ptr<Object> arpL3Protocol = arpL3Factory.Create <Object> ();
-    nodeContainer.Get(0)->AggregateObject (arpL3Protocol);
-
-    ObjectFactory ipv4L3Factory;
-    ipv4L3Factory.SetTypeId("ns3::Ipv4L3Protocol");
-    Ptr<Object> ipv4L3Protocol = ipv4L3Factory.Create <Object> ();
-    nodeContainer.Get(0)->AggregateObject (ipv4L3Protocol);
-
-    ObjectFactory icmpv4L4Factory;
-    icmpv4L4Factory.SetTypeId("ns3::Icmpv4L4Protocol");
-    Ptr<Object> icmpv4L4Protocol = icmpv4L4Factory.Create<Object> ();
-    nodeContainer.Get(0)->AggregateObject(icmpv4L4Protocol);
-
-    Ptr<Ipv4> ipv4 = nodeContainer.Get(0)->GetObject<Ipv4> ();
-    Ptr<Ipv4RoutingProtocol> ipv4RoutingProtocol = CreateObject<Ipv4StaticRouting>();
-    ipv4->SetRoutingProtocol (ipv4RoutingProtocol);
-
-    ObjectFactory trafficControlLayerFactory;
-    trafficControlLayerFactory.SetTypeId("ns3::TrafficControlLayer");
-    Ptr<Object> trafficControlLayerProtocol = trafficControlLayerFactory.Create<Object> ();
-    nodeContainer.Get(0)->AggregateObject(trafficControlLayerProtocol);
-
-    ObjectFactory udpL4Factory;
-    udpL4Factory.SetTypeId("ns3::UdpL4Protocol");
-    Ptr<Object> udpL4Protocol = udpL4Factory.Create<Object> ();
-    nodeContainer.Get(0)->AggregateObject(udpL4Protocol);
-
-    Ptr<PacketSocketFactory> packetSocketFactory = CreateObject<PacketSocketFactory> ();
-    nodeContainer.Get(0)->AggregateObject (packetSocketFactory);
-
-
-
-
-
-    std::cout << "ADDED, OK!\n";
-
-    /* End of added code */
 
     Ipv4AddressHelper ipv4AddressHelper;
     ipv4AddressHelper.SetBase("192.168.0.0", "255.255.255.0");
