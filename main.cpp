@@ -81,12 +81,27 @@ int main(int argc, char* argv[])
 
     netDeviceContainer.Add(pointToPointNetDeviceB);
 
-    debug("Added, OK");
     /* End of added code for PointToPointHelper*/
 
-    InternetStackHelper internetStackHelper;
-    internetStackHelper.Install(nodeContainer);
+    //InternetStackHelper internetStackHelper;
+    //internetStackHelper.Install(nodeContainer);
 
+    /* Added code to replace InternetStackHelper */
+
+    Ptr<ArpL3Protocol> arpL3Protocol = CreateObject<ArpL3Protocol>();
+    nodeA->AggregateObject(arpL3Protocol);
+
+    Ptr<Ipv4L3Protocol> ipv4L3Protocol = CreateObject<Ipv4L3Protocol>();
+    nodeA->AggregateObject(ipv4L3Protocol);
+
+    Ptr<Icmpv4L4Protocol> icmpv4L4Protocol = CreateObject<Icmpv4L4Protocol>();
+    nodeA->AggregateObject(icmpv4L4Protocol);
+
+    Ptr<Ipv4> ipv4A = nodeA->GetObject<Ipv4> ();
+    //Ptr<Ipv4RoutingProtocol> ipv4RoutingProtocol = CreateObject<Ipv4RoutingProtocol>();
+
+    debug("Added, OK");
+    /* End of added code for PointToPointHelper*/
 
     Ipv4AddressHelper ipv4AddressHelper;
     ipv4AddressHelper.SetBase("192.168.0.0", "255.255.255.0");
