@@ -21,6 +21,7 @@
  #include "ns3/point-to-point-module.h"
  #include "ns3/applications-module.h"
  #include "ns3/object-factory.h"
+ #include "ns3/traffic-control-layer.h"
 
 void debug(std::string str) {
     std::cout << str << std::endl;
@@ -88,17 +89,52 @@ int main(int argc, char* argv[])
 
     /* Added code to replace InternetStackHelper */
 
-    Ptr<ArpL3Protocol> arpL3Protocol = CreateObject<ArpL3Protocol>();
-    nodeA->AggregateObject(arpL3Protocol);
+    Ptr<ArpL3Protocol> arpL3ProtocolA = CreateObject<ArpL3Protocol>();
+    nodeA->AggregateObject(arpL3ProtocolA);
 
-    Ptr<Ipv4L3Protocol> ipv4L3Protocol = CreateObject<Ipv4L3Protocol>();
-    nodeA->AggregateObject(ipv4L3Protocol);
+    Ptr<Ipv4L3Protocol> ipv4L3ProtocolA = CreateObject<Ipv4L3Protocol>();
+    nodeA->AggregateObject(ipv4L3ProtocolA);
 
-    Ptr<Icmpv4L4Protocol> icmpv4L4Protocol = CreateObject<Icmpv4L4Protocol>();
-    nodeA->AggregateObject(icmpv4L4Protocol);
+    Ptr<Icmpv4L4Protocol> icmpv4L4ProtocolA = CreateObject<Icmpv4L4Protocol>();
+    nodeA->AggregateObject(icmpv4L4ProtocolA);
 
     Ptr<Ipv4> ipv4A = nodeA->GetObject<Ipv4> ();
-    //Ptr<Ipv4RoutingProtocol> ipv4RoutingProtocol = CreateObject<Ipv4RoutingProtocol>();
+    Ptr<Ipv4StaticRouting> ipv4StaticRoutingA = CreateObject<Ipv4StaticRouting>();
+    ipv4A->SetRoutingProtocol(ipv4StaticRoutingA);
+
+    Ptr<TrafficControlLayer> trafficControlLayerA = CreateObject<TrafficControlLayer>();
+    arpL3ProtocolA->SetTrafficControl(trafficControlLayerA);
+    nodeA->AggregateObject(trafficControlLayerA);
+
+    Ptr<UdpL4Protocol> udpL4ProtocolA = CreateObject<UdpL4Protocol>();
+    nodeA->AggregateObject(udpL4ProtocolA);
+
+    Ptr<PacketSocketFactory> packetSocketFactoryA = CreateObject<PacketSocketFactory> ();
+    nodeA->AggregateObject(packetSocketFactoryA);
+
+
+    Ptr<ArpL3Protocol> arpL3ProtocolB = CreateObject<ArpL3Protocol>();
+    nodeB->AggregateObject(arpL3ProtocolB);
+
+    Ptr<Ipv4L3Protocol> ipv4L3ProtocolB = CreateObject<Ipv4L3Protocol>();
+    nodeB->AggregateObject(ipv4L3ProtocolB);
+
+    Ptr<Icmpv4L4Protocol> icmpv4L4ProtocolB = CreateObject<Icmpv4L4Protocol>();
+    nodeB->AggregateObject(icmpv4L4ProtocolB);
+
+    Ptr<Ipv4> ipv4B = nodeB->GetObject<Ipv4> ();
+    Ptr<Ipv4StaticRouting> ipv4StaticRoutingB = CreateObject<Ipv4StaticRouting>();
+    ipv4B->SetRoutingProtocol(ipv4StaticRoutingB);
+
+    Ptr<TrafficControlLayer> trafficControlLayerB = CreateObject<TrafficControlLayer>();
+    arpL3ProtocolB->SetTrafficControl(trafficControlLayerB);
+    nodeB->AggregateObject(trafficControlLayerB);
+
+    Ptr<UdpL4Protocol> udpL4ProtocolB = CreateObject<UdpL4Protocol>();
+    nodeB->AggregateObject(udpL4ProtocolB);
+
+    Ptr<PacketSocketFactory> packetSocketFactoryB = CreateObject<PacketSocketFactory> ();
+    nodeB->AggregateObject(packetSocketFactoryB);
 
     debug("Added, OK");
     /* End of added code for PointToPointHelper*/
