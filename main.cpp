@@ -20,14 +20,13 @@
  #include "ns3/internet-module.h"
  #include "ns3/point-to-point-module.h"
  #include "ns3/applications-module.h"
- #include "ns3/object-factory.h"
  #include "ns3/traffic-control-layer.h"
+ #include "ns3/traffic-control-helper.h"
+
 
 void debug(std::string str) {
     std::cout << str << std::endl;
 }
-
-
 
 using namespace ns3;
 
@@ -136,19 +135,84 @@ int main(int argc, char* argv[])
     Ptr<PacketSocketFactory> packetSocketFactoryB = CreateObject<PacketSocketFactory> ();
     nodeB->AggregateObject(packetSocketFactoryB);
 
-    debug("Added, OK");
     /* End of added code for PointToPointHelper*/
 
-    Ipv4AddressHelper ipv4AddressHelper;
-    ipv4AddressHelper.SetBase("192.168.0.0", "255.255.255.0");
 
-    Ipv4InterfaceContainer ipv4InterfaceContainer = ipv4AddressHelper.Assign(netDeviceContainer);
+    //Ipv4AddressHelper ipv4AddressHelper;
+    //ipv4AddressHelper.SetBase("192.168.0.0", "255.255.255.0");
 
+    //Ipv4InterfaceContainer ipv4InterfaceContainer = ipv4AddressHelper.Assign(netDeviceContainer);
+
+    /* Added code to replace Ipv4AddressHelper */
+    /**/
+    uint32_t network = 3232235520;
+    uint32_t mask = 4294967040;
+    uint32_t address = 3232301057;
+    //uint32_t base = 0xffffffff;
+    uint32_t shift = 0xffffffff;
+    //uint32_t maxx = 0xffffffff;
+
+    Ipv4InterfaceContainer ipv4InterfaceContainer;
+    Ipv4Address ipv4Address;
+
+    for (uint32_t i = 0; i < netDeviceContainer.GetN(); ++i) {
+        Ptr<NetDevice> device = netDeviceContainer.Get (i);
+        Ptr<Node> node = device->GetNode ();
+
+        Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+
+        int32_t interface = ipv4->GetInterfaceForDevice (device);
+        if (interface == -1) {
+            interface = ipv4->AddInterface (device);
+        }
+
+        //~~
+        Ipv4Address addr ((network << shift) | address);
+        ipv4Address = addr;
+        ++address;
+        //Ipv4AddressGenerator::AddAllocated (addr);
+        //~~
+        Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (addr, mask);
+        ipv4->AddAddress (interface, ipv4Addr);
+        ipv4->SetMetric (interface, 1);
+        ipv4->SetUp (interface);
+        ipv4InterfaceContainer.Add (ipv4, interface);
+        Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
+
+        if (tc && DynamicCast<LoopbackNetDevice> (device) == 0 && tc->GetRootQueueDiscOnDevice (device) == 0) {
+            Ptr<NetDeviceQueueInterface> ndqi = device->GetObject<NetDeviceQueueInterface> ();
+
+            if (ndqi) {
+                std::size_t nTxQueues = ndqi->GetNTxQueues ();
+
+                TrafficControlHelper tcHelper = TrafficControlHelper::Default (nTxQueues);
+                tcHelper.Install (device);
+            }
+        }
+    }
+
+    /**/
+    /* End of added code for Ipv4AddressHelper */
+
+    /**
     UdpEchoServerHelper udpEchoServerHelper(9);
     ApplicationContainer serverApplicationContainer = udpEchoServerHelper.Install(nodeContainer.Get(1));
     serverApplicationContainer.Start(Seconds(1.0));
     serverApplicationContainer.Stop(Seconds(10.0));
+    **/
 
+    /* Added code to replace UdpEchoServerHelper */
+    /**/
+    Ptr<UdpEchoServer> udpEchoServer = CreateObjectWithAttributes<UdpEchoServer> ("Port", UintegerValue (9));
+    nodeB->AddApplication(udpEchoServer);
+    udpEchoServer->SetStartTime(Seconds(1.0));
+    udpEchoServer->SetStopTime(Seconds(20.0));
+
+    debug("Added, OK");
+    /**/
+    /* End of added code for Ipv4AddressHelper */
+
+    /**
     UdpEchoClientHelper udpEchoClientHelper(ipv4InterfaceContainer.GetAddress(1), 9);
     udpEchoClientHelper.SetAttribute("MaxPackets", UintegerValue(1));
     udpEchoClientHelper.SetAttribute("Interval", TimeValue(Seconds(2.0)));
@@ -157,6 +221,23 @@ int main(int argc, char* argv[])
     ApplicationContainer clientApplicationContainer = udpEchoClientHelper.Install(nodeContainer.Get(0));
     clientApplicationContainer.Start(Seconds(3.0));
     clientApplicationContainer.Stop(Seconds(10.0));
+    **/
+
+    /* Added code to replace UdpEchoClientHelper */
+    /**/
+    Ptr<UdpEchoClient> udpEchoClient = CreateObjectWithAttributes<UdpEchoClient> ("RemoteAddress", AddressValue(ipv4InterfaceContainer.GetAddress(1)));
+    udpEchoClient->SetAttribute("RemotePort", UintegerValue (9));
+    udpEchoClient->SetAttribute("MaxPackets", UintegerValue(1));
+    udpEchoClient->SetAttribute("Interval", TimeValue(Seconds(2.0)));
+    udpEchoClient->SetAttribute("PacketSize", UintegerValue(1024));
+
+    nodeA->AddApplication(udpEchoClient);
+    udpEchoClient->SetStartTime(Seconds(3));
+    udpEchoClient->SetStopTime(Seconds(10));
+
+    debug("Added, OK");
+    /**/
+    /* End of added code for Ipv4AddressHelper */
 
     //pointToPointHelper.EnablePcapAll("firstPcap");
     Simulator::Run ();
@@ -164,3 +245,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
