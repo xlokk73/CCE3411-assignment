@@ -22,16 +22,33 @@
  #include "ns3/applications-module.h"
  #include "ns3/traffic-control-layer.h"
  #include "ns3/traffic-control-helper.h"
+ #include "ns3/trace-helper.h"  
+ #include "ns3/object-base.h"
+
+#include "ns3/assert.h"
+#include "ns3/net-device-container.h"
+#include "ns3/node-container.h"
+#include "ns3/simulator.h"
+#include "ns3/pcap-file-wrapper.h"
+#include "ns3/output-stream-wrapper.h"
+#include "ns3/ptr.h"
+ 
+using namespace ns3;
 
 
 void debug(std::string str) {
     std::cout << str << std::endl;
 }
 
-using namespace ns3;
+void
+DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p) {
+  file->Write (Simulator::Now (), p);
+}
+
 
 int main(int argc, char* argv[])
 {
+    
     CommandLine cmd(__FILE__);
     cmd.Parse(argc, argv);
 
@@ -39,7 +56,7 @@ int main(int argc, char* argv[])
     ns3::LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
     ns3::LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
-    NodeContainer nodeContainer;
+    //NodeContainer nodeContainer;
     //nodeContainer.Create(2);
 
     //PointToPointHelper pointToPointHelper;
@@ -55,7 +72,7 @@ int main(int argc, char* argv[])
 
 
     Ptr<Node> nodeA = CreateObject<Node>();
-    nodeContainer.Add(nodeA);
+    //nodeContainer.Add(nodeA);
 
     Ptr<PointToPointNetDevice> pointToPointNetDeviceA = CreateObjectWithAttributes<PointToPointNetDevice>("DataRate", StringValue("5Mbps"));
     nodeA->AddDevice(pointToPointNetDeviceA);
@@ -69,7 +86,7 @@ int main(int argc, char* argv[])
 
 
     Ptr<Node> nodeB = CreateObject<Node>();
-    nodeContainer.Add(nodeB);
+    //nodeContainer.Add(nodeB);
 
     Ptr<PointToPointNetDevice> pointToPointNetDeviceB = CreateObjectWithAttributes<PointToPointNetDevice>("DataRate", StringValue("5Mbps"));
     nodeB->AddDevice(pointToPointNetDeviceB);
@@ -208,7 +225,6 @@ int main(int argc, char* argv[])
     udpEchoServer->SetStartTime(Seconds(1.0));
     udpEchoServer->SetStopTime(Seconds(20.0));
 
-    debug("Added, OK");
     /**/
     /* End of added code for Ipv4AddressHelper */
 
@@ -235,13 +251,33 @@ int main(int argc, char* argv[])
     udpEchoClient->SetStartTime(Seconds(3));
     udpEchoClient->SetStopTime(Seconds(10));
 
-    debug("Added, OK");
     /**/
     /* End of added code for Ipv4AddressHelper */
 
-    //pointToPointHelper.EnablePcapAll("firstPcap");
+
+    /*
+    PcapHelper pcapHelper;
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("firstPcap.pcap", std::ios::out, PcapHelper::DLT_PPP);
+    pcapHelper.HookDefaultSink<PointToPointNetDevice> (pointToPointNetDeviceA, "PromiscSniffer", file);
+    */
+
+    Ptr<PcapFileWrapper> fileA = CreateObject<PcapFileWrapper>();
+    fileA->Open("firstPcapA.pcap", std::ios::out);
+    fileA->Init(9);
+
+    std::string tracename = "PromiscSniffer";
+    pointToPointNetDeviceA->TraceConnectWithoutContext(tracename.c_str(),  MakeBoundCallback (&DefaultSink, fileA));
+
+
+    Ptr<PcapFileWrapper> fileB = CreateObject<PcapFileWrapper>();
+    fileB->Open("firstPcapB.pcap", std::ios::out);
+    fileB->Init(9);
+
+    pointToPointNetDeviceB->TraceConnectWithoutContext(tracename.c_str(),  MakeBoundCallback (&DefaultSink, fileB));
+
     Simulator::Run ();
     Simulator::Destroy ();
+
 
     return 0;
 }
