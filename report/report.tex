@@ -56,7 +56,7 @@ After that, the first node was created along with its corresponding point to poi
 
 \subsection{InternetStackHelper}
 \label{sec:internetstackhelper}
-For the Network layer and Transport layer, several protocols where bundled with the nodes. These being \texttt{ArpL3Protocol, Ipv4L3Protocol, Icmpv4L4Protocol, UdpL4Protocol}. The first three being make part of the Network Layer while the \texttt{UdpL4Protocol} makes part of the Transport layer. Static routing was used for IPv4. A traffic control layer and packet socket factory where also aggregated to the nodes.
+For the Network layer and Transport layer, several protocols where bundled with the nodes. These are \texttt{ArpL3Protocol, Ipv4L3Protocol, Icmpv4L4Protocol, UdpL4Protocol}. The first three being make part of the Network Layer while the \texttt{UdpL4Protocol} makes part of the Transport layer. Static routing was used for IPv4. A traffic control layer and packet socket factory where also aggregated to the nodes.
 
 \subsection{Ipv4AddressHelper}
 This part of the code also concerns the Internet layer of the nodes. Here, the devices are each given a unique IPv4 address. The nodes are given the IP addresses \texttt{192.169.1.1} and \texttt{192.169.1.2} with the default subnet mask for class C i.e. \texttt{255.255.255.0}. Here, like in \texttt{Ipv4AddressHelper}, addresses are only incremented (the code does not take into account a system of IPs.
@@ -67,7 +67,7 @@ This part of the code also concerns the Internet layer of the nodes. Here, the d
 As discussed in section \ref{sec:internetstackhelper} the nodes already have a transport layer. This section makes part of the application layer for the node. Here, a \texttt{UdpEchoServer} object is created and attached to one of the nodes as an application. Henceforth this node starts acting as the server. The start and stop time are specified.
 
 \subsection{UdpEchojClientHelper}
-Similarly to section \ref{sec:udpechoserverhelper}, in this part of the code an object of type \texttt{UdpEchoClient} is created. The attributes was set with the \texttt{PacketSize} being set to 2048. This is greater than the MTU which is 1500, to fit the required specification. This is then attached to the other node so it starts acting as a client. 
+Similarly to section \ref{sec:udpechoserverhelper}, in this part of the code an object of type \texttt{UdpEchoClient} is created. The attributes were set with the \texttt{PacketSize} being set to 2048. This is greater than the MTU which is 1500, to fit the required specification. This is then attached to the other node so it starts acting as a client. 
  	
  
 \subsection{PcapHelper} 
@@ -81,6 +81,23 @@ Following that, the method \texttt{TraceConnectWithoutCallback} is used and a fu
 
 \section{Investigation}
 \label{section:investigation}
+
+\subsection{Establishment}
+\begin{figure}[hbt]
+ \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{./images/firstpcap0}
+  \caption{Original packet capture file}
+  \label{fig:firstpcap0}
+\end{figure}
+
+\begin{figure}[hbt]
+ \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{./images/firstpcapa}
+  \caption{Packet capture file without helper}
+  \label{fig:firstpcapa}
+\end{figure}
+
+\subsection{Analysis}
+Figure \ref{fig:firstpcap0} show the pcap file captured on the given simulation, while figure \ref{fig:firstpcapa} shows the one capture without the use of any helpers. These figures confirm that the UDP protocol was used in the transport layer. The figures also show the IP addresses of each node. Moreover, one can see the bytes of data that were transferred; the data link protocol (P2P); the Internet protocol (version 4). These confirm that the situation is working as intended.
+
 
 \bibliographystyle{abbrv}
  \bibliography{references}
