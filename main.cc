@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
     /**/
     uint32_t network = 3232235520;
     uint32_t mask = 4294967040;
-    uint32_t address = 3232301057;
+    uint32_t address = 3232235521;
     //uint32_t base = 0xffffffff;
     uint32_t shift = 0xffffffff;
     //uint32_t maxx = 0xffffffff;

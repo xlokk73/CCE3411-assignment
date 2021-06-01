@@ -6,8 +6,9 @@
 \contentsline {subsection}{\numberline {2.3}InternetStackHelper}{3}{}%
 \contentsline {subsection}{\numberline {2.4}Ipv4AddressHelper}{3}{}%
 \contentsline {subsection}{\numberline {2.5}UdpEchoServerHelper}{3}{}%
-\contentsline {subsection}{\numberline {2.6}UdpEchojClientHelper}{3}{}%
+\contentsline {subsection}{\numberline {2.6}UdpEchoClientHelper}{3}{}%
 \contentsline {subsection}{\numberline {2.7}PcapHelper}{4}{}%
 \contentsline {paragraph}{}{4}{}%
 \contentsline {section}{\numberline {3}Investigation}{4}{}%
-\contentsline {section}{\numberline {4}Establishment}{4}{}%
+\contentsline {subsection}{\numberline {3.1}Establishment}{4}{}%
+\contentsline {subsection}{\numberline {3.2}Analysis}{5}{}%
